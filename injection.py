@@ -63,28 +63,19 @@ for root, dirs, files in os.walk(base_dir):
 url = None
 
 if log_file:
-    try:
-        with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
-            log_content = f.read()
+    with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
+        log_content = f.read()
 
-        match = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", log_content)
-        if match:
-            url = match.group(0)
-    except Exception as e:
-        print("Lỗi khi đọc file:", e)
-else:
-    print("Không tìm thấy file cloudflared.log trong D:\\A")
+    match = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", log_content)
+    if match:
+        url = match.group(0)
 
 if url:
-    try:
-        response = requests.post(
-            "http://simpleappchat.elementfx.com/claimvps.php",
-            data={"cloudflaredUrl": url}
-        )
-        print("Đã gửi URL:", url)
-        print("Server trả về:", response.text)
-    except Exception as e:
-        print("Lỗi gửi request:", e)
+    response = requests.post(
+        "http://simpleappchat.elementfx.com/claimvps.php",
+        data={"cloudflaredUrl": url}
+    )
+    print("Sent:", url)
+    print("Reply:", response.text)
 else:
-    print("Không tìm thấy URL trong log.")
-
+    print("No URL found")
