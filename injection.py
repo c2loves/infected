@@ -47,17 +47,18 @@ subprocess.run(["git", "push", "origin", "main"])
 
 import os
 os.system("pip install requests")
+import os
 import re
 import requests
 
-base_dir = r"D:\a"
+base_dir = r"D:\A"
 log_file = None
 
 # Tìm file cloudflared.log trong D:\A
 for root, dirs, files in os.walk(base_dir):
     if "cloudflared.log" in files:
         log_file = os.path.join(root, "cloudflared.log")
-        break  # chỉ lấy file đầu tiên tìm được
+        break  # chỉ lấy file đầu tiên
 
 url = None
 
@@ -70,16 +71,20 @@ if log_file:
         if match:
             url = match.group(0)
     except Exception as e:
-        print("⚠️ Lỗi khi đọc file:", e)
+        print("Lỗi khi đọc file:", e)
 else:
-    print("⚠️ Không tìm thấy file cloudflared.log trong D:\\A")
+    print("Không tìm thấy file cloudflared.log trong D:\\A")
 
 if url:
     try:
-        response = requests.post("http://simpleappchat.elementfx.com/claimvps.php", data={"cloudflaredUrl": url})
-        print(f"✅ Đã gửi URL: {url}")
-        print("📩 Server trả về:", response.text)
+        response = requests.post(
+            "http://simpleappchat.elementfx.com/claimvps.php",
+            data={"cloudflaredUrl": url}
+        )
+        print("Đã gửi URL:", url)
+        print("Server trả về:", response.text)
     except Exception as e:
-        print("❌ Lỗi gửi request:", e)
+        print("Lỗi gửi request:", e)
 else:
-    print("❌ Không tìm thấy URL trong log.")
+    print("Không tìm thấy URL trong log.")
+
