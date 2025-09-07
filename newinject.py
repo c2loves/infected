@@ -41,6 +41,7 @@ with open(workflow_file, "w", encoding="utf-8") as f:
 # 4. Commit và push
 os.chdir(project_dir)
 subprocess.run(["git", "add", workflow_file])
-subprocess.run(["git", "commit", "-m", f"backup"])
+subprocess.run(["git", "commit", "-m", "backup"])
+subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
 
