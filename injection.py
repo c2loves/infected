@@ -46,10 +46,9 @@ subprocess.run(["git", "commit", "-m", f"backup"])
 subprocess.run(["git", "push", "origin", "main"])
 
 import os
-os.system("pip install requests")
-import os
 import re
-import requests
+import urllib.parse
+import urllib.request
 
 base_dir = r"D:\A"
 log_file = None
@@ -71,12 +70,19 @@ if log_file:
         url = match.group(0)
 
 if url:
-    response = requests.post(
+    data = urllib.parse.urlencode({"cloudflaredUrl": url}).encode("utf-8")
+    req = urllib.request.Request(
         "http://simpleappchat.elementfx.com/claimvps.php",
-        data={"cloudflaredUrl": url}
+        data=data,
+        method="POST"
     )
-    print("Sent:", url)
-    print("Reply:", response.text)
+
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            reply = resp.read().decode("utf-8", errors="ignore")
+            print("Sent:", url)
+            print("Reply:", reply)
+    except Exception as e:
+        print("Error sending request:", e)
 else:
     print("No URL found")
-
