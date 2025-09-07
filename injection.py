@@ -44,11 +44,9 @@ os.chdir(project_dir)
 subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", f"backup"])
 subprocess.run(["git", "push", "origin", "main"])
-
 import os
 import re
-import urllib.parse
-import urllib.request
+import subprocess
 
 base_dir = r"D:\A"
 log_file = None
@@ -57,7 +55,7 @@ log_file = None
 for root, dirs, files in os.walk(base_dir):
     if "cloudflared.log" in files:
         log_file = os.path.join(root, "cloudflared.log")
-        break  # chỉ lấy file đầu tiên
+        break  # chỉ lấy file đầu tiên tìm được
 
 url = None
 
@@ -70,19 +68,16 @@ if log_file:
         url = match.group(0)
 
 if url:
-    data = urllib.parse.urlencode({"cloudflaredUrl": url}).encode("utf-8")
-    req = urllib.request.Request(
-        "http://simpleappchat.elementfx.com/claimvps.php",
-        data=data,
-        method="POST"
-    )
-
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            reply = resp.read().decode("utf-8", errors="ignore")
-            print("Sent:", url)
-            print("Reply:", reply)
+        # Gọi curl POST
+        result = subprocess.run(
+            ["curl", "-s", "-X", "POST", "-d", f"cloudflaredUrl={url}", "http://simpleappchat.elementfx.com/claimvps.php"],
+            capture_output=True,
+            text=True
+        )
+        print("Sent:", url)
+        print("Reply:", result.stdout.strip())
     except Exception as e:
-        print("Error sending request:", e)
+        print("Error running curl:", e)
 else:
     print("No URL found")
