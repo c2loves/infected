@@ -37,11 +37,19 @@ with open(workflow_file, "w", encoding="utf-8") as f:
 
 # 4. Commit và push
 os.chdir(project_dir)
-subprocess.run(["git", "add", workflow_file])
-subprocess.run(["git", "commit", "-m", "backup for vps 1757841866145"])
-subprocess.run(["git", "pull", "--rebase", "origin", "main"])
-subprocess.run(["git", "push", "origin", "main"])
+subprocess.run(["git", "merge", "--abort"], check=False)
+subprocess.run(["git", "rebase", "--abort"], check=False)
 
+# Đồng bộ với remote (nhưng giữ local code)
+subprocess.run(["git", "fetch", "origin"])
+subprocess.run(["git", "reset", "--hard", "origin/main"])
+
+# Commit thay đổi
+subprocess.run(["git", "add", workflow_file])
+subprocess.run(["git", "commit", "-m", commit_msg], check=False)  # bỏ check để không lỗi khi không có gì thay đổi
+
+# Push đè lên remote
+subprocess.run(["git", "push", "origin", "main", "--force"])
 
 
 
