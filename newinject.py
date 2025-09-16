@@ -29,7 +29,7 @@ with open(workflow_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
 lines[34] = code_inject
-lines[35] = "        "
+lines[35] = ""
 
 with open(workflow_file, "w", encoding="utf-8") as f:
     f.writelines(lines)
@@ -37,30 +37,10 @@ with open(workflow_file, "w", encoding="utf-8") as f:
 
 # 4. Commit và push
 os.chdir(project_dir)
-subprocess.run(["git", "merge", "--abort"], check=False)
-subprocess.run(["git", "rebase", "--abort"], check=False)
-
-# Đồng bộ với remote (nhưng giữ local code)
-subprocess.run(["git", "fetch", "origin"])
-subprocess.run(["git", "reset", "--hard", "origin/main"])
-
-# Commit thay đổi
 subprocess.run(["git", "add", workflow_file])
-subprocess.run(["git", "commit", "-m", commit_msg], check=False)  # bỏ check để không lỗi khi không có gì thay đổi
-
-# Push đè lên remote
-subprocess.run(["git", "push", "origin", "main", "--force"])
-
-
-
-
-
-
-
-
-
-
-
+subprocess.run(["git", "commit", "-m", "backup"])
+subprocess.run(["git", "pull", "--rebase", "origin", "main"])
+subprocess.run(["git", "push", "origin", "main"])
 
 
 
