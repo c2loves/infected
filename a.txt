@@ -2852,8 +2852,8 @@ const jalist = [
  "f15797a734d0b4f171a86fd35c9a5e43"
 ];
 const tips1 =[
- "use premium proxy will get more request/s",
- "this script only work on http/2!",
+ "TuanHai DZ hơn bạn...",
+ "Gemlogin Tool on Top",
  ];
 
   site = [
