@@ -1,1 +1,479 @@
-a
+var getLinkTimeout = false;
+var check_form = false;
+var checking_form = false;
+var recaptcha_captcha = false;
+var recaptcha_2_captcha = false;
+var hcaptcha_captcha = false;
+var hcaptcha_2_captcha = false;
+var hcaptcha_report_captcha = false;
+var load_advertise_error = false;
+var time_out_alert_interval = false;
+$(document).ready(function () {
+  alertify.set("notifier", "position", "top-center");
+  $.ajax({
+    'method': "POST",
+    'url': api_domain + "/api/campaign/get-advertise",
+    'data': {
+      'alias': $("#captcha-html-wrapper").data("alias"),
+      'codes': $('#captcha-html-wrapper').data("code")
+    },
+    'success': function (_0x2e6edc) {
+      if (_0x2e6edc.success) {
+        if (_0x2e6edc.hasOwnProperty("form")) {
+          $("#captcha-html-wrapper").html(_0x2e6edc.form);
+          $("#advertise-html-wrapper").html(_0x2e6edc.html);
+          if (_0x2e6edc.hasOwnProperty("run") && _0x2e6edc.run != '') {
+            eval(_0x2e6edc.run);
+          }
+          if ($('#captcha-html-wrapper').find("#recaptcha").length || $("#captcha-html-wrapper").find("#hcaptcha").length) {
+            $(".password").keyup(function () {
+              if (getLinkTimeout) {
+                clearTimeout(getLinkTimeout);
+              }
+              getLinkTimeout = setTimeout(checkPassword, 0x3e8);
+              check_form = $(this).closest("form");
+            });
+            $(".password").on('paste', function () {
+              if (getLinkTimeout) {
+                clearTimeout(getLinkTimeout);
+              }
+              getLinkTimeout = setTimeout(checkPassword, 0x3e8);
+              check_form = $(this).closest("form");
+            });
+            loadRecaptcha();
+          } else {
+            $('.password').keyup(function () {
+              if (getLinkTimeout) {
+                clearTimeout(getLinkTimeout);
+              }
+              getLinkTimeout = setTimeout(checkPassword, 0x3e8);
+              check_form = $(this).closest("form");
+            });
+            $(".password").on("paste", function () {
+              if (getLinkTimeout) {
+                clearTimeout(getLinkTimeout);
+              }
+              getLinkTimeout = setTimeout(checkPassword, 0x3e8);
+              check_form = $(this).closest("form");
+            });
+          }
+        } else {
+          if (_0x2e6edc.hasOwnProperty('captcha_url') && _0x2e6edc.hasOwnProperty("captcha_id")) {
+            var _0x4c34b6 = document.createElement('a');
+            _0x4c34b6.setAttribute("href", _0x2e6edc.captcha_url);
+            _0x4c34b6.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+            _0x4c34b6.setAttribute("rel", "no-referrer-when-downgrade nofollow");
+            document.getElementsByTagName('body')[0x0].appendChild(_0x4c34b6);
+            window.history.pushState({}, '', location.origin + location.pathname + '?code=' + _0x2e6edc.captcha_id);
+            _0x4c34b6.click();
+          } else {
+            $("#captcha-html-wrapper").html(_0x2e6edc.html);
+            loadRecaptcha();
+          }
+        }
+        $('.get-link').before("<div style=\"color: red;font-style: italic;margin-bottom: 10px;\">Thời gian phiên còn: <span class = \"time-out-alert\" data-time = \"600\">600</span></div>");
+        if ($('.time-out-alert').length) {
+          time_out_alert_interval = setInterval(function () {
+            if ($(".time-out-alert").length) {
+              var _0x11f4d7 = $(".time-out-alert").data("time");
+              _0x11f4d7--;
+              $('.time-out-alert').html(_0x11f4d7);
+              $(".time-out-alert").data("time", _0x11f4d7);
+              if (_0x11f4d7 <= 0x0) {
+                $(".time-out-alert").parent().html("Nhiệm vụ đã hết hạn. Vui lòng F5 để làm lại nhiệm vụ");
+                clearInterval(time_out_alert_interval);
+                time_out_alert_interval = false;
+              }
+            } else {
+              clearInterval(time_out_alert_interval);
+              time_out_alert_interval = false;
+            }
+          }, 0x3e8);
+        }
+      } else {
+        if (recaptcha_ready) {
+          createDefaultRecaptcha();
+        } else if (hcaptcha_ready) {
+          createDefaultHcaptcha();
+        } else {
+          load_advertise_error = true;
+        }
+      }
+    },
+    'error': function (_0x3e6df6) {
+      if (recaptcha_ready) {
+        createDefaultRecaptcha();
+      } else if (hcaptcha_ready) {
+        createDefaultHcaptcha();
+      } else {
+        load_advertise_error = true;
+      }
+    }
+  });
+  $("#modal-report").on('show.bs.modal', function (_0x13bb24) {
+    $('#modal-report-advertise-id').val($("a[data-target=\"#modal-report\"]").data("advertise_id"));
+  });
+  $("input[type=radio][name=modal-report-error]").change(function () {
+    switch (this.value) {
+      case 0x3:
+      case '3':
+        $('#modal-report-reason').closest(".form-group").removeClass("hidden");
+        break;
+      default:
+        $("#modal-report-reason").closest('.form-group').addClass("hidden");
+    }
+  });
+  $("#modal-report-submit").click(function () {
+    if ($("#modal-report-form").data("loading") == true) {
+      return;
+    }
+    var _0x5a5bf7 = {};
+    $.each($('#modal-report-form').serializeArray(), function () {
+      _0x5a5bf7[this.name] = this.value;
+    });
+    if (!_0x5a5bf7.hasOwnProperty('g-recaptcha-response') || _0x5a5bf7["g-recaptcha-response"] == '') {
+      alertify.error("Bạn vui lòng check captcha");
+      return false;
+    }
+    if (!_0x5a5bf7.hasOwnProperty("modal-report-error") || _0x5a5bf7["modal-report-error"] == '') {
+      alertify.error("Bạn vui lòng chọn loại lỗi");
+      return false;
+    }
+    if (_0x5a5bf7['modal-report-error'] == '3' && (!_0x5a5bf7.hasOwnProperty('modal-report-reason') || _0x5a5bf7['modal-report-reason'] == '')) {
+      alertify.error("Bạn vui lòng điền chi tiết lỗi");
+      return false;
+    }
+    $.ajax({
+      'url': api_domain + "/links/report",
+      'method': "POST",
+      'data': _0x5a5bf7,
+      'beforeSend': function () {
+        $("#modal-report-submit").data("loading", true);
+      },
+      'success': function (_0x384135) {
+        try {
+          if (_0x384135.success == true) {
+            alertify.success("Cám ơn bạn đã báo lỗi");
+            $("#modal-report-form")[0x0].reset();
+            $("#modal-report").modal("hide");
+          } else {
+            alertify.error("Hiện không thể kết nối tới server. Bạn vui lòng thử lại sau");
+          }
+        } catch (_0x5ba642) {
+          alertify.error("Hiện không thể kết nối tới server. Bạn vui lòng thử lại sau");
+        }
+      },
+      'error': function () {
+        alertify.error("Hiện không thể kết nối tới server. Bạn vui lòng thử lại sau");
+      },
+      'complete': function () {
+        $("#modal-report-submit").data("loading", false);
+      }
+    });
+  });
+});
+function showAlert(_0x5a41a2) {
+  alertify.error(_0x5a41a2);
+}
+function checkPassword() {
+  var _0x2f57b5 = check_form.serialize();
+  if (check_form.find('.g-recaptcha').length) {
+    if (!grecaptcha.getResponse(check_form.find('.g-recaptcha').data("recaptcha-id")).length) {
+      return;
+    }
+  }
+  if (check_form.find(".h-captcha").length) {
+    if (!hcaptcha.getResponse(check_form.find('.h-captcha').data('captcha-id')).length) {
+      return;
+    }
+  }
+  if (check_form.find('input[type=radio][name=sq-response]').length) {
+    if (!check_form.find("input[type=radio][name=sq-response]:checked").length) {
+      return;
+    }
+  }
+  if (check_form && $(".get-link").hasClass("disabled") && check_form.find("[name=\"password\"]").val() != '' && !checking_form) {
+    $.ajax({
+      'method': 'POST',
+      'url': api_domain + "/links/get-link-info",
+      'data': _0x2f57b5,
+      'beforeSend': function () {
+        $(".get-link").append("<i class = \"fa fa-spinner fa-spin\"></i>");
+        checking_form = true;
+      },
+      'success': function (_0x7d994e) {
+        if (_0x7d994e.success) {
+          $('.get-link').attr("href", _0x7d994e.url);
+          $(".get-link").removeClass("disabled");
+          $(".get-link").html("Click vào đây để tiếp tục");
+          $(".time-out-alert").parent().remove();
+          if (time_out_alert_interval != false) {
+            clearInterval(time_out_alert_interval);
+            time_out_alert_interval = false;
+          }
+        } else {
+          showAlert(_0x7d994e.info);
+          if (_0x7d994e.hasOwnProperty("return")) {
+            window.open(_0x7d994e["return"]);
+          }
+          if (_0x7d994e.hasOwnProperty("security_question")) {
+            $('input[type=radio][name=sq-response]').closest('.col-sm-6').remove();
+            $(".security-question-wrapper").append(_0x7d994e.security_question);
+            $("input[type=radio][name=sq-response]").iCheck({
+              'checkboxClass': "icheckbox_square-blue",
+              'radioClass': "iradio_square-blue",
+              'increaseArea': "20%"
+            }).on("ifChecked", function () {
+              check_form = $(this).closest("form");
+              checkPassword();
+            });
+          }
+          if (recaptcha_ready) {
+            grecaptcha.reset(recaptcha_captcha);
+            grecaptcha.reset(recaptcha_2_captcha);
+          } else if (hcaptcha_ready) {
+            hcaptcha.reset(hcaptcha_captcha);
+            hcaptcha.reset(hcaptcha_2_captcha);
+          }
+        }
+      },
+      'error': function (_0x523aef) {},
+      'complete': function () {
+        $(".get-link i").remove();
+        checking_form = false;
+      }
+    });
+  }
+  return false;
+}
+function checkCaptcha() {
+  if ($('.get-link').hasClass("disabled")) {
+    var _0x4ba778 = $("#main-form").serialize();
+    $.ajax({
+      'method': "POST",
+      'url': api_domain + "/links/check-captcha",
+      'data': _0x4ba778,
+      'beforeSend': function () {
+        $(".get-link").append("<i class = \"fa fa-spinner fa-spin\"></i>");
+      },
+      'success': function (_0x4dd53c) {
+        if (_0x4dd53c.success) {
+          $('.get-link').attr("href", _0x4dd53c.url);
+          $(".get-link").removeClass("disabled");
+        } else {
+          showAlert(_0x4dd53c.info);
+          if (_0x4dd53c.hasOwnProperty("return")) {
+            window.open(_0x4dd53c['return']);
+          }
+          grecaptcha.reset();
+        }
+      },
+      'error': function (_0x54bdc7) {
+        grecaptcha.reset();
+      },
+      'complete': function () {
+        $(".get-link i").remove();
+      }
+    });
+  }
+  return false;
+}
+var onloadCallback = function () {
+  recaptcha_ready = true;
+  if ($("#recaptcha").length) {
+    recaptcha_captcha = grecaptcha.render("recaptcha", {
+      'sitekey': recaptcha_key
+    });
+    $("#recaptcha").data('recaptcha-id', recaptcha_captcha);
+  }
+  if ($("#recaptcha-2").length) {
+    recaptcha_2_captcha = grecaptcha.render("recaptcha-2", {
+      'sitekey': recaptcha_key
+    });
+    $('#recaptcha-2').data("recaptcha-id", recaptcha_2_captcha);
+  }
+  if ($("#recaptcha-report").length) {
+    recaptcha_report_captcha = grecaptcha.render("recaptcha-report", {
+      'sitekey': recaptcha_key
+    });
+    $("#recaptcha-report").data("recaptcha-id", recaptcha_report_captcha);
+  }
+  if (load_advertise_error) {
+    createDefaultRecaptcha();
+  }
+};
+var hcaptchaOnloadCallback = function () {
+  hcaptcha_ready = true;
+  if ($("#hcaptcha").length) {
+    hcaptcha_captcha = hcaptcha.render("hcaptcha", {
+      'sitekey': hcaptcha_key
+    });
+    $('#hcaptcha').data("captcha-id", hcaptcha_captcha);
+  }
+  if ($("#hcaptcha-2").length) {
+    hcaptcha_2_captcha = hcaptcha.render("hcaptcha-2", {
+      'sitekey': hcaptcha_key
+    });
+    $('#hcaptcha-2').data("captcha-id", hcaptcha_2_captcha);
+  }
+  if ($('#hcaptcha-report').length) {
+    hcaptcha_report_captcha = grecaptcha.render('hcaptcha-report', {
+      'sitekey': hcaptcha_key
+    });
+    $("#hcaptcha-report").data("recaptcha-id", hcaptcha_report_captcha);
+  }
+  if (load_advertise_error) {
+    createDefaultHcaptcha();
+  }
+};
+var recaptcha_callback = function () {
+  checkCaptcha();
+};
+var loadRecaptcha = function () {
+  if (recaptcha_ready) {
+    if ($("#recaptcha").length) {
+      recaptcha_captcha = grecaptcha.render("recaptcha", {
+        'sitekey': recaptcha_key
+      });
+      $("#recaptcha").data("recaptcha-id", recaptcha_captcha);
+    }
+    if ($("#recaptcha-2").length) {
+      recaptcha_2_captcha = grecaptcha.render("recaptcha-2", {
+        'sitekey': recaptcha_key
+      });
+      $("#recaptcha-2").data('recaptcha-id', recaptcha_2_captcha);
+    }
+  }
+  if (hcaptcha_ready) {
+    if ($("#hcaptcha").length) {
+      hcaptcha_captcha = hcaptcha.render("hcaptcha", {
+        'sitekey': hcaptcha_key
+      });
+      $("#hcaptcha").data("captcha-id", hcaptcha_captcha);
+    }
+    if ($("#hcaptcha-2").length) {
+      hcaptcha_2_captcha = hcaptcha.render('hcaptcha-2', {
+        'sitekey': hcaptcha_key
+      });
+      $("#hcaptcha-2").data("captcha-id", hcaptcha_2_captcha);
+    }
+  }
+  if ($('input[type=radio][name=sq-response]').length) {
+    $("input[type=radio][name=sq-response]").iCheck({
+      'checkboxClass': "icheckbox_square-blue",
+      'radioClass': "iradio_square-blue",
+      'increaseArea': "20%"
+    }).on("ifChanged", function () {
+      check_form = $(this).closest('form');
+      checkPassword();
+    });
+  }
+};
+var createDefaultRecaptcha = function () {
+  var _0x2943b4 = $("<h4>").html("Vui lòng check captcha để tiếp tục tới trang đích");
+  var _0x316e46 = $("<div>").attr({
+    'style': "margin-bottom: 10px;"
+  });
+  var _0x583a5c = $("<form>").attr({
+    'id': "main-form",
+    'method': 'post'
+  });
+  var _0x390fed = $("<div>").attr({
+    'id': "recaptcha",
+    'class': "g-recaptcha",
+    'data-callback': "recaptcha_callback"
+  });
+  var _0x1552b1 = $("<input>").attr({
+    'type': "hidden",
+    'id': 'alias',
+    'name': 'alias'
+  }).val($("#captcha-html-wrapper").data("alias"));
+  var _0x1a6df1 = $('<div>').attr({
+    'class': "form-group"
+  });
+  var _0x116e75 = $('<a>').attr({
+    'class': "btn btn-success disabled get-link",
+    'target': '_blank',
+    'rel': "noopener noreferrer nofollow"
+  }).html("Click vào đây để tiếp tục");
+  _0x1a6df1.append(_0x116e75);
+  _0x583a5c.append(_0x390fed);
+  _0x583a5c.append(_0x1552b1);
+  _0x583a5c.append(_0x1a6df1);
+  _0x316e46.append(_0x583a5c);
+  $('#captcha-html-wrapper').append(_0x2943b4);
+  $("#captcha-html-wrapper").append(_0x316e46);
+  $("#captcha-html-wrapper .loader").remove();
+  $("#advertise-html-wrapper").remove();
+  recaptcha_captcha = grecaptcha.render('recaptcha', {
+    'sitekey': recaptcha_key
+  });
+  _0x390fed.data('recaptcha-id', recaptcha_captcha);
+};
+var createDefaultHcaptcha = function () {
+  var _0x3abd88 = $('<h4>').html("Vui lòng check captcha để tiếp tục tới trang đích");
+  var _0x27d4e3 = $("<div>").attr({
+    'style': "margin-bottom: 10px;"
+  });
+  var _0x4caf06 = $("<form>").attr({
+    'id': 'main-form',
+    'method': "post"
+  });
+  var _0x1985fb = $("<div>").attr({
+    'id': 'hcaptcha',
+    'class': "h-captcha",
+    'data-callback': "recaptcha_callback"
+  });
+  var _0x215a04 = $("<input>").attr({
+    'type': "hidden",
+    'id': 'alias',
+    'name': "alias"
+  }).val($("#captcha-html-wrapper").data("alias"));
+  var _0x56f34a = $("<div>").attr({
+    'class': 'form-group'
+  });
+  var _0x32cab2 = $("<a>").attr({
+    'class': "btn btn-success disabled get-link",
+    'target': "_blank",
+    'rel': "noopener noreferrer nofollow"
+  }).html("Click vào đây để tiếp tục");
+  _0x56f34a.append(_0x32cab2);
+  _0x4caf06.append(_0x1985fb);
+  _0x4caf06.append(_0x215a04);
+  _0x4caf06.append(_0x56f34a);
+  _0x27d4e3.append(_0x4caf06);
+  $('#captcha-html-wrapper').append(_0x3abd88);
+  $("#captcha-html-wrapper").append(_0x27d4e3);
+  $("#captcha-html-wrapper .loader").remove();
+  $("#advertise-html-wrapper").remove();
+  hcaptcha_captcha = hcaptcha.render("hcaptcha", {
+    'sitekey': hcaptcha_key
+  });
+  _0x1985fb.data('captcha-id', hcaptcha_captcha);
+};
+function copyTextToClipboard(_0x474020) {
+  var _0x2244da = document.createElement('textarea');
+  _0x2244da.style.position = "fixed";
+  _0x2244da.style.top = 0x0;
+  _0x2244da.style.left = 0x0;
+  _0x2244da.style.width = "2em";
+  _0x2244da.style.height = "2em";
+  _0x2244da.style.padding = 0x0;
+  _0x2244da.style.border = "none";
+  _0x2244da.style.outline = "none";
+  _0x2244da.style.boxShadow = "none";
+  _0x2244da.style.background = "transparent";
+  _0x2244da.value = _0x474020;
+  document.body.appendChild(_0x2244da);
+  _0x2244da.select();
+  try {
+    var _0x35c6ed = document.execCommand('copy');
+    var _0x145019 = _0x35c6ed ? "Đã copy link" : "Không copy được link. Bạn vui lòng copy link thủ công";
+    alertify.success(_0x145019);
+  } catch (_0x452ce9) {
+    console.log("Không copy được link. Bạn vui lòng copy link thủ công");
+    return false;
+  }
+  document.body.removeChild(_0x2244da);
+  return true;
+}
