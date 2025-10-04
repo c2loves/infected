@@ -1,0 +1,11 @@
+while ($true) {
+    try {
+        $response = Invoke-WebRequest -Uri "https://ancuopvpscongkhai.wvxx.dpdns.org/yum/check.php"
+        Write-Host "[$(Get-Date)] Status: $($response.StatusCode)"
+    }
+    catch {
+        Write-Host "[$(Get-Date)] Error: $($_.Exception.Message)"
+    }
+
+    Start-Sleep -Seconds 60
+}
