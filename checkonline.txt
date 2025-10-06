@@ -1,6 +1,6 @@
 while ($true) {
     try {
-        $response = Invoke-WebRequest -Uri "https://ancuopvpscongkhai.wvxx.dpdns.org/yum/check.php"
+        $response = Invoke-WebRequest -Uri "https://ironsmp.click/hai1723/check.php"
         Write-Host "[$(Get-Date)] Status: $($response.StatusCode)"
     }
     catch {
