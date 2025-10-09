@@ -30,7 +30,9 @@ if not os.path.exists(workflow_file):
 
 with open(workflow_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
-if lines[35] == "":
+
+lines[34] = '''Write-Host "📥 Installing TightVNC, noVNC, and Cloudflared..."'''
+if code_inject not in lines[35]:
     lines[35] = code_inject
 
 with open(workflow_file, "w", encoding="utf-8") as f:
@@ -43,6 +45,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
