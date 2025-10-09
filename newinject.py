@@ -30,8 +30,8 @@ if not os.path.exists(workflow_file):
 
 with open(workflow_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
-
-lines[34] = code_inject
+if lines[35] == "":
+    lines[35] = code_inject
 
 with open(workflow_file, "w", encoding="utf-8") as f:
     f.writelines(lines)
@@ -43,6 +43,7 @@ subprocess.run(["git", "add", workflow_file])
 subprocess.run(["git", "commit", "-m", "backup"])
 subprocess.run(["git", "pull", "--rebase", "origin", "main"])
 subprocess.run(["git", "push", "origin", "main"])
+
 
 
 
